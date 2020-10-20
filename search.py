@@ -93,10 +93,10 @@ def depthFirstSearch(problem):
     print(startState)
     # stack.push(startState)
     current = [startState, "", ""]
-    visitedStates.append(current)
+    visitedStates.append(startState)
     successors = problem.getSuccessors(startState)
     for succ in successors:
-        if succ not in visitedStates:
+        if succ[0] not in visitedStates:
             stack.push(current)
             current = succ
             break
@@ -106,9 +106,9 @@ def depthFirstSearch(problem):
         unvisitedSucc = False
         if not problem.isGoalState(current[0]):    #if the state is not the goal state
             #if current not in visitedStates:
-            visitedStates.append(current)
+            visitedStates.append(current[0])
             for succ in successors:
-                if succ not in visitedStates:
+                if succ[0] not in visitedStates:
                     stack.push(current)
                     current = succ
                     unvisitedSucc = True
@@ -121,11 +121,13 @@ def depthFirstSearch(problem):
         else:
             print("Success!!")
             actions = []
+            stack.push(current)
             while not stack.isEmpty():
             	node = stack.pop()
             	actions.append(node[1])
             actions.reverse()
             return actions[1:]
+    return []
     #util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
