@@ -89,56 +89,84 @@ def depthFirstSearch(problem):
     "*** YOUR CODE HERE ***"
     stack = util.Stack() #stack to keep all the states in the tree
     visitedStates = []  #list to keep all visited states
+    actionsList = []
     startState = problem.getStartState()
     print(startState)
     # stack.push(startState)
     current = [startState, "", ""]
-    visitedStates.append(startState)
-    successors = problem.getSuccessors(startState)
-    for succ in successors:
-        if succ[0] not in visitedStates:
-            stack.push(current)
-            current = succ
-            break
+    stack.push((startState, actionsList))
 
     while not stack.isEmpty():
-        successors = problem.getSuccessors(current[0])
+        current, actions = stack.pop()
         unvisitedSucc = False
-        if not problem.isGoalState(current[0]):    #if the state is not the goal state
-            #if current not in visitedStates:
-            visitedStates.append(current[0])
-            for succ in successors:
-                if succ[0] not in visitedStates:
-                    stack.push(current)
-                    current = succ
-                    unvisitedSucc = True
-                    break
-            if not unvisitedSucc:  #if the current state has no unvisited successors then remove from stack
-                #stack.pop()
-                node = stack.pop()    #take the next item from the stack
-                current = node
-                #stack.push(node)    #push the node back to the stack
+        if not problem.isGoalState(current):    #if the state is not the goal state
+            if current not in visitedStates:     #if the node is not visited
+                successors = problem.getSuccessors(current)    #get the successors
+                visitedStates.append(current)
+                for succ in successors:
+                    nextAction = actions+[succ[1]]
+                    #actions.append(succ[1])
+                    stack.push((succ[0], nextAction))
         else:
-            print("Success!!")
-            actions = []
-            stack.push(current)
-            while not stack.isEmpty():
-            	node = stack.pop()
-            	actions.append(node[1])
-            actions.reverse()
-            return actions[1:]
+            return actions
     return []
-    #util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    queue = util.Queue() #stack to keep all the states in the tree
+    visitedStates = []  #list to keep all visited states
+    actionsList = []
+    startState = problem.getStartState()
+    print(startState)
+    # stack.push(startState)
+    current = [startState, "", ""]
+    queue.push((startState, actionsList))
+
+    while not queue.isEmpty():
+        current, actions = queue.pop()
+        unvisitedSucc = False
+        if not problem.isGoalState(current):    #if the state is not the goal state
+            if current not in visitedStates:     #if the node is not visited
+                successors = problem.getSuccessors(current)    #get the successors
+                visitedStates.append(current)
+                for succ in successors:
+                    nextAction = actions+[succ[1]]
+                    #actions.append(succ[1])
+                    queue.push((succ[0], nextAction))
+        else:
+            return actions
+    return []
+    #util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    pqueue = util.PriorityQueue() #stack to keep all the states in the tree
+    visitedStates = []  #list to keep all visited states
+    actionsList = []
+    startState = problem.getStartState()
+    print(startState)
+    # stack.push(startState)
+    current = [startState, "", ""]
+    pqueue.update((startState, actionsList, 0), 0)  #start state has a cost of 0
+    cost_thus_far = 0
+
+    while not pqueue.isEmpty():
+        current, actions, cost_thus_far = pqueue.pop()
+        unvisitedSucc = False
+        if not problem.isGoalState(current):    #if the state is not the goal state
+            if current not in visitedStates:     #if the node is not visited
+                successors = problem.getSuccessors(current)    #get the successors
+                visitedStates.append(current)
+                for succ in successors:
+                    nextAction = actions+[succ[1]]
+                    #actions.append(succ[1])
+                    pqueue.update((succ[0], nextAction, cost_thus_far+succ[2]), cost_thus_far+succ[2])
+        else:
+            return actions
+    return []
+    #util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
     """
