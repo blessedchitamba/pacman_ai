@@ -376,7 +376,17 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    x, y = state[0]
+    closestCorner = 0
+    if len(state[1])<4:   #if the current state has not found all corners yet
+        unfoundCorners = set(corners).symmetric_difference(set(state[1]))
+        closestCorner = abs(x - list(unfoundCorners)[0][0]) + abs(y - list(unfoundCorners)[0][1])  #initialize closest corner to the first corner of the 4
+        for corner in list(unfoundCorners):   #find the closest unfound corner
+            if (abs(x - corner[0]) + abs(y - corner[1])) > closestCorner:
+                closestCorner = abs(x - corner[0]) + abs(y - corner[1])
+        return closestCorner
+    else:
+        return 0 # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
