@@ -19,6 +19,7 @@ Pacman agents (in searchAgents.py).
 
 import util
 
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -178,7 +179,34 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from searchAgents import manhattanHeuristic
+
+    pqueue = util.PriorityQueue() #stack to keep all the states in the tree
+    visitedStates = []  #list to keep all visited states
+    actionsList = []
+    startState = problem.getStartState()
+    print(startState)
+    current = [startState, "", ""]
+    heuristic_cost = 0+heuristic(startState, problem)
+    pqueue.update((startState, actionsList, heuristic_cost), heuristic_cost)  #start state has a cost of 0
+    cost_thus_far = 0
+
+    while not pqueue.isEmpty():
+        current, actions, cost_thus_far = pqueue.pop()
+        unvisitedSucc = False
+        if not problem.isGoalState(current):    #if the state is not the goal state
+            if current not in visitedStates:     #if the node is not visited
+                successors = problem.getSuccessors(current)    #get the successors
+                visitedStates.append(current)
+                for succ in successors:
+                    nextAction = actions+[succ[1]]
+                    #actions.append(succ[1])
+                    heuristic_cost = problem.getCostOfActions(nextAction)+heuristic(succ[0], problem)
+                    pqueue.update((succ[0], nextAction, heuristic_cost), heuristic_cost)
+        else:
+            return actions
+    return []
+    #util.raiseNotDefined()
 
 
 # Abbreviations
