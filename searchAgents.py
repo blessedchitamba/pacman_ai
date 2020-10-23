@@ -409,6 +409,8 @@ class FoodSearchProblem:
         self.startingGameState = startingGameState
         self._expanded = 0 # DO NOT CHANGE
         self.heuristicInfo = {} # A dictionary for the heuristic to store information
+        foodGrid = self.startingGameState.getFood().asList()
+        self.heuristicInfo['foodGrid']=foodGrid
 
     def getStartState(self):
         return self.start
@@ -480,6 +482,19 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
+    closestFood = 0
+
+    if state[1].count() > 0:   #if the current state has not found all food yet
+        #find the first food item
+        foodx, foody = problem.heuristicInfo['foodGrid'][0][0], problem.heuristicInfo['foodGrid'][0][1]
+        closestFood = abs(position[0] - foodx) + abs(position[1] - foody)  #initialize closest corner to the first corner of the 4
+        for food in problem.heuristicInfo['foodGrid']:   #find the closest unfound corner
+            if (abs(position[0] - foodx) + abs(position[1] - foody)) > closestFood:
+                closestFood = abs(position[0] - foodx) + abs(position[1] - foody)
+            foodx, foody = food[0], food[1]
+        return closestFood
+    else:
+        return 0 # Default to trivial solution
     return 0
 
 class ClosestDotSearchAgent(SearchAgent):
