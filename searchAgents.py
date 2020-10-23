@@ -403,6 +403,47 @@ class FoodSearchProblem:
       pacmanPosition: a tuple (x,y) of integers specifying Pacman's position
       foodGrid:       a Grid (see game.py) of either True or False, specifying remaining food
     """
+    def proceed(self, x, y, foodGrid, dir):
+        count = 0
+        if dir=="right":
+            while (x+1, y) in foodGrid:
+                count+=1
+                x+=1
+        elif dir=="top":
+            while (x, y+1) in foodGrid:
+                count+=1
+                y+=1
+        elif dir=="left":
+            while (x-1, y) in foodGrid:
+                count+=1
+                x-=1
+        elif dir=="bottom":
+            while (x, y-1) in foodGrid:
+                count+=1
+                y-=1
+        return count
+
+    def clusterFood(self, foodGrid):
+        clusterSize = 1
+        sizes = []
+        for food in foodGrid:   #iterate through each food item
+            #keep incrementing x value till hits wall
+            x = food[0]
+            y = food[1]
+            #first check for food on all sides of the current position and proceed in that direction
+            if (x+1, y) in foodGrid:   #if the 
+                clusterSize+=self.proceed(x, y, foodGrid, "right")
+            if (x, y+1) in foodGrid:
+                clusterSize+=self.proceed(x, y, foodGrid, "top")
+            if (x-1, y) in foodGrid:
+                clusterSize+=self.proceed(x, y, foodGrid, "left")
+            if (x, y-1) in foodGrid:
+                clusterSize+=self.proceed(x, y, foodGrid, "bottom")
+            cluster = ((x,y), clusterSize)
+            sizes.append(cluster)
+            clusterSize=1
+        return sizes
+
     def __init__(self, startingGameState):
         self.start = (startingGameState.getPacmanPosition(), startingGameState.getFood())
         self.walls = startingGameState.getWalls()
@@ -411,6 +452,7 @@ class FoodSearchProblem:
         self.heuristicInfo = {} # A dictionary for the heuristic to store information
         foodGrid = self.startingGameState.getFood().asList()
         self.heuristicInfo['foodGrid']=foodGrid
+        self.heuristicInfo['sizes'] = self.clusterFood(foodGrid)
 
     def getStartState(self):
         return self.start
@@ -484,18 +526,32 @@ def foodHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     closestFood = 0
 
-    if state[1].count() > 0:   #if the current state has not found all food yet
-        #find the first food item
-        foodx, foody = problem.heuristicInfo['foodGrid'][0][0], problem.heuristicInfo['foodGrid'][0][1]
-        closestFood = abs(position[0] - foodx) + abs(position[1] - foody)  #initialize closest corner to the first corner of the 4
-        for food in problem.heuristicInfo['foodGrid']:   #find the closest unfound corner
-            if (abs(position[0] - foodx) + abs(position[1] - foody)) > closestFood:
-                closestFood = abs(position[0] - foodx) + abs(position[1] - foody)
-            foodx, foody = food[0], food[1]
-        return closestFood
+    foodList = foodGrid.asList()
+    if len(foodList)>0:
+        furthestFood = mazeDistance(position, foodList[0], problem.startingGameState)
+        for food in foodList:
+            distance = mazeDistance(position, (food[0], food[1]), problem.startingGameState)
+            if distance > furthestFood:
+                furthestFood = distance
+        return furthestFood
     else:
-        return 0 # Default to trivial solution
-    return 0
+        return 0
+
+    # if state[1].count() > 0:   #if the current state has not found all food yet
+    #     #find the first food item
+    #     foodx, foody = problem.heuristicInfo['foodGrid'][0][0], problem.heuristicInfo['foodGrid'][0][1]
+    #     closestFood = abs(position[0] - foodx) + abs(position[1] - foody)  #initialize closest corner to the first corner of the 4
+    #     totalFood = len(problem.heuristicInfo['foodGrid'])
+    #     foodLeft = totalFood - problem.heuristicInfo['sizes'][0][1]
+    #     totalCost = foodLeft+closestFood
+    #     for food in problem.heuristicInfo['sizes']:   #find the closest unfound corner
+    #         if (totalFood - food[1]) + (abs(position[0] - foodx) + abs(position[1] - foody)) < totalCost:
+    #             totalCost = (totalFood - food[1]) + (abs(position[0] - foodx) + abs(position[1] - foody))
+    #         foodx, foody = food[0][0], food[0][1]
+    #     return totalCost
+    # else:
+    #     return 0 # Default to trivial solution
+    # return 0
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -526,7 +582,8 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.aStarSearch(problem)
+        #util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -562,7 +619,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food[x][y]
+        #util.raiseNotDefined()
 
 def mazeDistance(point1, point2, gameState):
     """

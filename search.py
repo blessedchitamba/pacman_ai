@@ -92,7 +92,6 @@ def depthFirstSearch(problem):
     visitedStates = []  #list to keep all visited states
     actionsList = []
     startState = problem.getStartState()
-    print(startState)
     # stack.push(startState)
     current = [startState, "", ""]
     stack.push((startState, actionsList))
@@ -119,7 +118,6 @@ def breadthFirstSearch(problem):
     visitedStates = []  #list to keep all visited states
     actionsList = []
     startState = problem.getStartState()
-    print(startState)
     # stack.push(startState)
     current = [startState, "", ""]
     queue.push((startState, actionsList))
@@ -147,7 +145,6 @@ def uniformCostSearch(problem):
     visitedStates = []  #list to keep all visited states
     actionsList = []
     startState = problem.getStartState()
-    print(startState)
     # stack.push(startState)
     current = [startState, "", ""]
     pqueue.update((startState, actionsList, 0), 0)  #start state has a cost of 0
@@ -185,7 +182,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     visitedStates = []  #list to keep all visited states
     actionsList = []
     startState = problem.getStartState()
-    print(startState)
     current = [startState, "", ""]
     heuristic_cost = 0+heuristic(startState, problem)
     pqueue.update((startState, actionsList, heuristic_cost), heuristic_cost)  #start state has a cost of 0
